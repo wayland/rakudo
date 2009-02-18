@@ -16,15 +16,9 @@ our $recurse = 1;
 
 our %harness_args = (
     language  => 'perl6',
-    compiler  => 'perl6.pbc',
+    exec      => ['./perl6'],
     verbosity => 0,
 );
-
-if (-d 'parrot') {
-    $harness_args{exec}     = ['parrot/parrot', 'perl6.pbc'];
-} else {
-    $harness_args{compiler} = 'perl6.pbc';
-}
 
 GetOptions(
         'tests-from-file=s' => \my $list_file,

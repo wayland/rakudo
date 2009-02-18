@@ -28,8 +28,6 @@ use TAP::Parser::Aggregator 3.01;
 use File::Find;
 use Data::Dumper;
 
-my $parrot = -d 'parrot' ? 'parrot/parrot' : '../../parrot';
-
 my %not_process;
 {
     my @not_process = read_specfile('t/spectest.data');
@@ -92,7 +90,7 @@ sub read_specfile {
 sub get_harness {
     return TAP::Harness->new({
             verbosity   => -2,
-            exec        => [$parrot, '-G', 'perl6.pbc'],
+            exec        => ['./perl6'],
             merge       => 1,
     });
 }
