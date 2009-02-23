@@ -105,6 +105,15 @@ BUILTINS_PIR = \
   src/builtins/system.pir \
   src/builtins/traits.pir \
 
+SETTING = \
+  src/setting/Array.pm \
+  src/setting/Bool.pm \
+  src/setting/Hash.pm \
+  src/setting/List.pm \
+  src/setting/Pair.pm \
+  src/setting/Str.pm \
+  src/setting/Whatever.pm \
+
 PMCS        = perl6str objectref perl6scalar mutablevar perl6multisub
 
 PMC_SOURCES = $(PMC_DIR)/perl6str.pmc $(PMC_DIR)/objectref.pmc $(PMC_DIR)/perl6scalar.pmc \
@@ -119,9 +128,11 @@ CLEANUPS = \
   *.pdb \
   perl6$(O) \
   perl6$(EXE) \
+  perl6_s1.pbc \
   installable_perl6$(EXE) \
   Test.pir \
   src/gen_*.pir \
+  src/gen_*.pm \
   $(PMC_DIR)/*.h \
   $(PMC_DIR)/*.c \
   $(PMC_DIR)/*.dump \
@@ -151,6 +162,7 @@ all: perl6$(EXE)
 # (We're not quite ready to make this a default target.)
 perl6$(EXE): perl6.pbc
 	$(PBC_TO_EXE) perl6.pbc
+	@win32_libparrot_copy@
 
 spectest_checkout : t/spec
 
@@ -167,7 +179,13 @@ xmas: perl6$(EXE)
 
 ##  supporting targets for perl6
 # the Perl 6 compiler
-perl6.pbc: $(PARROT) $(SOURCES) $(BUILTINS_PIR)
+perl6_s1.pbc: $(PARROT) $(SOURCES) $(BUILTINS_PIR)
+	$(PERL) -e "" > src/gen_setting.pir
+	$(PARROT) $(PARROT_ARGS) -o perl6_s1.pbc perl6.pir
+
+# the Perl 6 compiler
+perl6.pbc: perl6_s1.pbc src/gen_setting.pm
+	$(PARROT) $(PARROT_ARGS) perl6_s1.pbc --target=pir src/gen_setting.pm > src/gen_setting.pir
 	$(PARROT) $(PARROT_ARGS) -o perl6.pbc perl6.pir
 
 installable_perl6$(EXE): perl6.pbc
@@ -197,6 +215,9 @@ src/gen_metaop.pir: build/gen_metaop_pir.pl
 
 src/gen_junction.pir: build/gen_junction_pir.pl
 	$(PERL) build/gen_junction_pir.pl src/gen_junction.pir
+
+src/gen_setting.pm: build/gen_setting_pm.pl $(SETTING)
+	$(PERL) build/gen_setting_pm.pl $(SETTING) > src/gen_setting.pm
 
 $(PERL6_GROUP): $(PARROT) $(PMC_SOURCES)
 	cd $(PMC_DIR) && $(BUILD_DYNPMC) generate $(PMCS)
