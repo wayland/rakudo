@@ -21,45 +21,6 @@ src/classes/Range.pir - methods for the Range class
 
 =over 4
 
-=item ACCEPTS(topic)
-
-Determines if topic is within the range or equal to the range.
-
-=cut
-
-.sub 'ACCEPTS' :method
-    .param pmc topic
-
-    $I0 = isa topic, 'Range'
-    unless $I0 goto value_in_range_check
-    $I0 = self.'from'()
-    $I1 = topic.'from'()
-    if $I0 != $I1 goto false
-    $I0 = self.'to'()
-    $I1 = topic.'to'()
-    if $I0 != $I1 goto false
-    $P0 = getattribute self, "$!from_exclusive"
-    $P1 = getattribute topic, "$!from_exclusive"
-    if $P0 != $P1 goto false
-    $P0 = getattribute self, "$!to_exclusive"
-    $P1 = getattribute topic, "$!to_exclusive"
-    if $P0 != $P1 goto false
-    goto true
-
-  value_in_range_check:
-    $I0 = self.'!from_test'(topic)
-    unless $I0 goto false
-    $I0 = self.'!to_test'(topic)
-    unless $I0 goto false
-
-  true:
-    $P0 = get_hll_global ['Bool'], 'True'
-    .return ($P0)
-  false:
-    $P0 = get_hll_global ['Bool'], 'False'
-    .return ($P0)
-.end
-
 
 =item clone()   (vtable method)
 
@@ -149,33 +110,6 @@ just return a clone of the Range.
     $P1 = self.'to'()
     $P2 = get_hll_global 'list'
     .tailcall $P2($P0, $P1)
-.end
-
-
-=item perl()
-
-Returns a Perl representation of the Range.
-
-=cut
-
-.sub 'perl' :method
-    .local string result, tmp
-    .local pmc from, fromexc, toexc, to
-    from = getattribute self, '$!from'
-    fromexc = getattribute self, '$!from_exclusive'
-    toexc = getattribute self, '$!to_exclusive'
-    to = getattribute self, '$!to'
-    result = from.'perl'()
-    unless fromexc goto dots
-    result .= '^'
-  dots:
-    result .= '..'
-    unless toexc goto end
-    result .= '^'
-  end:
-    tmp = to.'perl'()
-    result .= tmp
-    .return (result)
 .end
 
 
