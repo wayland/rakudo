@@ -10,10 +10,12 @@ class Range is also {
     }
 
     method ACCEPTS($topic) {
-         my Bool $!from_exclusive ?? $!from <  $topic.from 
-                                  !! $!from <= $topic.from;
-         my Bool $!to_exclusive   ??  $!to  <  $topic.to
-                                  !! $!from <= $topic.to;
+         my Bool $from_truth = $!from_exclusive 
+                                  ??  $!from < $topic
+                                  !! $!from <= $topic;
+         my Bool $to_truth   = $!to_exclusive   
+                                  ??  $!to  <  $topic
+                                  !! $!from <= $topic;
          return $from_truth && $to_truth;
     }
 }
