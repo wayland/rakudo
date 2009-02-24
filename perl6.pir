@@ -86,18 +86,18 @@ USAGE
     setattribute perl6, '$version', $P0
 
     ##  create a list for holding the stack of nested blocks
-    $P0 = new ['List']
+    $P0 = new ['ResizablePMCArray']
     set_hll_global ['Perl6';'Grammar';'Actions'], '@?BLOCK', $P0
 
     ## create a list for holding the stack of nested package
     ## declarators
-    $P0 = new 'List'
+    $P0 = new ['ResizablePMCArray']
     set_hll_global ['Perl6';'Grammar';'Actions'], '@?PKGDECL', $P0
 
     ## create a list for holding the stack of nested package
     ## namespaces (we store the namespace as a flat, ::
     ## separated string for now, for handing to .parse_name)
-    $P0 = new 'List'
+    $P0 = new ['ResizablePMCArray']
     set_hll_global ['Perl6';'Grammar';'Actions'], '@?NS', $P0
 
     ## create a (shared) metaclass node
@@ -110,7 +110,7 @@ USAGE
     set_hll_global ['Perl6';'Grammar';'Actions'], '%?CLASSMAP', $P0
 
     ##  create a list of END blocks to be run
-    $P0 = new 'List'
+    $P0 = new ['ResizablePMCArray']
     set_hll_global ['Perl6'], '@?END_BLOCKS', $P0
 
     ##  tell PAST::Var how to encode Perl6Str and Str values
