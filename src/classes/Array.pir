@@ -30,26 +30,29 @@ Remove items from an array.
 .namespace ['Perl6Array']
 .sub 'delete' :method :multi(Perl6Array)
     .param pmc indices :slurpy
-    .local pmc result
+    
+    .local pmc result, result_storage, storage
+    storage = getattribute self, '@!storage'
     result = new 'List'
+    result_storage = getattribute result, '@!storage'
     null $P99
 
     indices.'!flatten'()
   indices_loop:
     unless indices goto indices_end
     $I0 = shift indices
-    $P0 = self[$I0]
-    push result, $P0
-    self[$I0] = $P99
+    $P0 = storage[$I0]
+    push result_storage, $P0
+    storage[$I0] = $P99
 
   shorten:
     $I0 = self.'elems'()
     dec $I0
   shorten_loop:
     if $I0 < 0 goto shorten_end
-    $P0 = self[$I0]
+    $P0 = storage[$I0]
     unless null $P0 goto shorten_end
-    delete self[$I0]
+    delete storage[$I0]
     dec $I0
     goto shorten_loop
   shorten_end:
@@ -69,8 +72,10 @@ Return true if the elements at C<indices> have been assigned to.
 .sub 'exists' :method :multi(Perl6Array)
     .param pmc indices :slurpy
     .local int test
+    .local pmc storage
 
     test = 0
+    storage = getattribute self, '@!storage'
   indices_loop:
     unless indices goto indices_end
     $I0 = shift indices
@@ -114,7 +119,8 @@ Remove the last item from the array and return it.
 .sub 'pop' :method :multi(Perl6Array)
     .local pmc x
     unless self goto empty
-    x = pop self
+    $P0 = getattribute self, '@!storage'
+    x = pop $P0
     goto done
   empty:
     x = '!FAIL'('Undefined value popped from empty array')
@@ -133,7 +139,8 @@ Add C<args> to the end of the Array.
     .param pmc args :slurpy
     args.'!flatten'()
     $I0 = elements self
-    splice self, args, $I0, 0
+    $P0 = getattribute self, '@!storage'
+    splice $P0, args, $I0, 0
     .tailcall self.'elems'()
 .end
 
@@ -147,7 +154,8 @@ Shift the first item off the array and return it.
 .sub 'shift' :method :multi(Perl6Array)
     .local pmc x
     unless self goto empty
-    x = shift self
+    $P0 = getattribute self, '@!storage'
+    x = shift $P0
     goto done
   empty:
     x = '!FAIL'('Undefined value shifted from empty array')
@@ -165,7 +173,8 @@ Adds C<args> to the beginning of the Array.
 .sub 'unshift' :method :multi(Perl6Array)
     .param pmc args :slurpy
     args.'!flatten'()
-    splice self, args, 0, 0
+    $P0 = getattribute self, '@!storage'
+    splice $P0, args, 0, 0
     .tailcall self.'elems'()
 .end
 
@@ -178,7 +187,8 @@ Return Array as a List of its values.
 .namespace ['Perl6Array']
 .sub 'values' :method
     $P0 = new 'List'
-    splice $P0, self, 0, 0
+    $P1 = getattribute $P0, '@!storage'
+    splice $P1, self, 0, 0
     .return ($P0)
 .end
 
@@ -248,7 +258,7 @@ Store things into an Array (e.g., upon assignment)
     ## the source argument contains self or elements of self.
     array = new 'ResizablePMCArray'
     source = 'list'(source)
-    it = iter source
+    it = source.'iterator'()
   array_loop:
     unless it goto array_done
     $P0 = shift it
@@ -257,8 +267,9 @@ Store things into an Array (e.g., upon assignment)
     push array, $P0
     goto array_loop
   array_done:
-    $I0 = elements self
-    splice self, array, 0, $I0
+    $P0 = getattribute self, '@!storage'
+    $I0 = elements $P0
+    splice $P0, array, 0, $I0
     .return (self)
 .end
 

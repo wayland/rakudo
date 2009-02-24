@@ -8,14 +8,24 @@ src/classes/List.pir - Perl 6 List class and related functions
 
 .namespace []
 .sub '' :anon :load :init
-    .local pmc p6meta, listproto
+    .local pmc p6meta, rpaproto, listproto
     p6meta = get_hll_global ['Perl6Object'], '$!P6META'
-    listproto = p6meta.'new_class'('List', 'parent'=>'ResizablePMCArray Any')
+    
+    # Register ResizablePMCArray proto-object.
+    rpaproto = p6meta.'new_class'('Parrot::RezizablePMCArray')
+    p6meta.'register'('ResizablePMCArray', 'protoobject'=> rpaproto)
+    
+    # Now create List class.
+    listproto = p6meta.'new_class'('List', 'parent'=>'Any', 'attr'=>'@!storage')
     $P0 = get_hll_global 'Positional'
     $P0 = $P0.'!select'()
     p6meta.'add_role'($P0, 'to'=>listproto)
-    p6meta.'register'('ResizablePMCArray', 'parent'=>listproto, 'protoobject'=>listproto)
+.end
 
+.namespace ['List']
+.sub '' :vtable('init')
+    $P0 = new 'ResizablePMCArray'
+    setattribute self, '@!storage', $P0
 .end
 
 =head2 Methods
@@ -28,7 +38,6 @@ Smart-matches against the list.
 
 =cut
 
-.namespace ['List']
 .sub 'ACCEPTS' :method
     .param pmc topic
 
@@ -143,7 +152,8 @@ A List in list context returns itself.
 .namespace ['List']
 .sub 'Iterator' :method
     self.'!flatten'()
-    $P0 = iter self
+    $P0 = getattribute self, '@!storage'
+    $P0 = iter $P0
     .return ($P0)
 .end
 
@@ -163,7 +173,8 @@ A list in Scalar context becomes a Scalar containing an Array.
 # FIXME:  :vtable('get_string') is wrong here.
 .sub 'Str' :method :vtable('get_string')
     self.'!flatten'()
-    $S0 = join ' ', self
+    $P0 = getattribute self, '@!storage'
+    $S0 = join ' ', $P0
     .return ($S0)
 .end
 
@@ -175,14 +186,28 @@ This version of list morphs a ResizablePMCArray into a List.
 
 .namespace ['ResizablePMCArray']
 .sub 'list' :method
+    .return (self)
+.end
+
+
+=item ResizablePMCArray!flatten
+
+Morphs a ResizablePMCArray into a List and then tail-calls to its flatten.
+
+=cut
+
+.namespace ['ResizablePMCArray']
+.sub '!flatten' :method
     ##  this code morphs a ResizablePMCArray into a List
     ##  without causing a clone of any of the elements
     $P0 = new 'ResizablePMCArray'
     splice $P0, self, 0, 0
     $P1 = new 'List'
     copy self, $P1
-    splice self, $P0, 0, 0
-    .return (self)
+    .local pmc storage
+    storage = getattribute self, '@!storage'
+    splice storage, $P0, 0, 0
+    .tailcall self.'!flatten'()
 .end
 
 
@@ -199,22 +224,25 @@ Return the number of elements in the list.
 =cut
 
 .namespace ['List']
-.sub 'elems' :method :multi('ResizablePMCArray') :vtable('get_number')
+.sub 'elems' :method :multi('List')
     self.'!flatten'()
-    $I0 = elements self
+    .local pmc storage
+    storage = getattribute self, '@!storage'
+    $I0 = elements storage
     .return ($I0)
 .end
 
 
 .namespace ['List']
 .sub 'reverse' :method
-    .local pmc result, it
+    .local pmc result, it, storage
     result = new 'List'
+    storage = getattribute result, '@!storage'
     it = self.'iterator'()
   loop:
     unless it goto done
     $P0 = shift it
-    unshift result, $P0
+    unshift storage, $P0
     goto loop
   done:
     .return (result)
@@ -240,8 +268,10 @@ layer.  It will likely change substantially when we have lazy lists.
     .param int has_size        :opt_flag
 
     ##  we use the 'elements' opcode here because we want the true length
+    .local pmc storage
     .local int len, i
-    len = elements self
+    storage = getattribute self, '@!storage'
+    len = elements storage
     i = 0
   flat_loop:
     if i >= len goto flat_end
@@ -249,31 +279,28 @@ layer.  It will likely change substantially when we have lazy lists.
     if i >= size goto flat_end
   flat_loop_1:
     .local pmc elem
-    elem = self[i]
+    elem = storage[i]
     $I0 = isa elem, 'Perl6Scalar'
     if $I0 goto flat_next
     $I0 = can elem, '!flatten'
     if $I0 goto flat_elem
     $I0 = does elem, 'array'
     unless $I0 goto flat_next
-    splice self, elem, i, 1
-    len = elements self
+    splice storage, elem, i, 1
+    len = elements storage
     goto flat_loop
   flat_next:
     inc i
     goto flat_loop
   flat_elem:
     elem = elem.'!flatten'()
-    splice self, elem, i, 1
-    $I0 = elements elem
+    $P0 = getattribute elem, '@!storage'
+    splice storage, $P0, i, 1
+    $I0 = elements $P0
     i += $I0
-    len = elements self
+    len = elements storage
     goto flat_loop
   flat_end:
-    $I0 = isa self, 'List'
-    if $I0 goto end
-    self.'list'()
-  end:
     .return (self)
 .end
 
@@ -324,8 +351,10 @@ Returns an iterator for the list.
 =cut
 
 .sub 'iterator' :method
+    .local pmc storage
     self.'!flatten'()
-    $P0 = iter self
+    storage = getattribute self, "@!storage"
+    $P0 = iter storage
     .return ($P0)
 .end
 
@@ -345,9 +374,10 @@ Returns an iterator for the list.
     comparer = get_hll_global 'infix:eq'
   have_comparer:
 
-    .local pmc ulist
+    .local pmc ulist, ulist_storage
     $P0 = get_hll_global 'List'
     ulist = $P0.'new'()
+    ulist_storage = getattribute ulist, '@!storage'
 
     .local pmc it_inner, it_outer, val
     it_outer = iter self
@@ -362,7 +392,7 @@ Returns an iterator for the list.
     if $P1 goto outer_loop
     goto inner_loop
   inner_done:
-    ulist.'push'(val)
+    push ulist_storage, val
     goto outer_loop
 
   outer_done:
@@ -412,10 +442,11 @@ The zip operator.
 
 .sub 'infix:Z'
     .param pmc arglist :slurpy
-    .local pmc result
 
     # create a list to hold the results
+    .local pmc result, result_storage
     result = new 'List'
+    result_storage = getattribute result, '@!storage'
 
     unless arglist goto result_done
 
@@ -437,18 +468,19 @@ The zip operator.
     # an argument iterator with no more elements, we're done.
 
   outer_loop:
-    .local pmc iterlist_it, reselem
+    .local pmc iterlist_it, reselem, reselem_storage
     iterlist_it = iter iterlist
     reselem = new 'List'
+    reselem_storage = getattribute reselem, '@!storage'
   iterlist_loop:
     unless iterlist_it goto iterlist_done
     arg_it = shift iterlist_it
     unless arg_it goto result_done
     $P0 = shift arg_it
-    reselem.'push'($P0)
+    push reselem_storage, $P0
     goto iterlist_loop
   iterlist_done:
-    result.'push'(reselem)
+    push result_storage, reselem
     goto outer_loop
 
   result_done:
@@ -464,10 +496,11 @@ The non-hyper cross operator.
 
 .sub 'infix:X'
     .param pmc args            :slurpy
-    .local pmc res
+    .local pmc res, res_storage
 
     .local pmc res, outer, inner, it, val
     res = new 'List'
+    res_storage = getattribute res, '@!storage'
 
     ##  if the are no arguments, result is empty list
     unless args goto done
@@ -502,7 +535,7 @@ The non-hyper cross operator.
     ##  add our outer value to the beginning
     unshift $P0, val
     ##  save it in the result list
-    push res, $P0
+    push res_storage, $P0
     goto inner_loop
 
     ##  if call to infix:X had only one argument, our result
@@ -513,8 +546,9 @@ The non-hyper cross operator.
     unless it goto done
     val = shift it
     $P0 = new 'List'
-    push $P0, val
-    push res, $P0
+    $P1 = getattribute $P0, '@!storage'
+    push $P1, val
+    push res_storage, $P0
     goto one_arg_loop
 
   done:
