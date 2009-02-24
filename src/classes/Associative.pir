@@ -44,7 +44,7 @@ Returns a list element or slice.
     self[$S0] = result
     goto end
   slice:
-    result = new 'List'
+    result = new 'Perl6Array'
   slice_loop:
     unless args goto slice_done
     $S0 = shift args
@@ -54,7 +54,7 @@ Returns a list element or slice.
     elem = 'undef'()
     self[$S0] = elem
   slice_elem:
-    push result, elem
+    result.'push'(elem)
     goto slice_loop
   slice_done:
   end:

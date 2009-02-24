@@ -234,10 +234,10 @@ src/builtins/op.pir - Perl 6 builtin operators
 .sub 'infix:xx' :multi(_,_)
     .param pmc a
     .param int n
-    $P0 = 'list'()
+    $P0 = new 'Perl6Array'
   loop:
     unless n > 0 goto done
-    push $P0, a
+    a.'push'($P0)
     dec n
     goto loop
   done:

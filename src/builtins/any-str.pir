@@ -1128,7 +1128,7 @@ Takes a string and expands it out into a list of values.
     .local pmc retv
     .local int len
 
-    retv = new 'List'
+    retv = new 'Perl6Array'
 
     len = length template
     if len == 0 goto done

@@ -628,6 +628,19 @@ find_max_loop_end:
 
 ## TODO: zip
 
+.namespace ['List']
+.sub '' :vtable('get_pmc_keyed')
+    .param int index
+    $P0 = self[index]
+    .return ($P0)
+.end
+.sub '' :vtable('get_pmc_keyed_int')
+    .param int index
+    $P0 = getattribute self, '@!storage'
+    $P0 = $P0[index]
+    .return ($P0)
+.end
+
 =back
 
 =cut

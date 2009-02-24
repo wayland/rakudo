@@ -307,7 +307,7 @@ Does a junctional dispatch. XXX Needs to support named args.
     .local pmc eigenstates, it, results
     eigenstates = junc.'eigenstates'()
     it = iter eigenstates
-    results = 'list'()
+    results = new 'Perl6Array'
   thread_loop:
     unless it goto thread_done
     $P0 = shift it
@@ -318,7 +318,7 @@ Does a junctional dispatch. XXX Needs to support named args.
     name_args[name_index] = $P0
   do_threaded_call:
     $P0 = the_sub(args :flat, name_args :flat :named)
-    push results, $P0
+    results.'push'($P0)
     goto thread_loop
   thread_done:
     .tailcall '!MAKE_JUNCTION'(type, results)

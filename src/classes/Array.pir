@@ -31,10 +31,9 @@ Remove items from an array.
 .sub 'delete' :method :multi(Perl6Array)
     .param pmc indices :slurpy
     
-    .local pmc result, result_storage, storage
+    .local pmc result, storage
     storage = getattribute self, '@!storage'
-    result = new 'List'
-    result_storage = getattribute result, '@!storage'
+    result = new 'Perl6Array'
     null $P99
 
     indices.'!flatten'()
@@ -42,7 +41,7 @@ Remove items from an array.
     unless indices goto indices_end
     $I0 = shift indices
     $P0 = storage[$I0]
-    push result_storage, $P0
+    result.'push'($P0)
     storage[$I0] = $P99
 
   shorten:
@@ -207,6 +206,7 @@ Create an array.
 .namespace []
 .sub 'circumfix:[ ]'
     .param pmc values          :slurpy
+    values.'!flatten'()
     .tailcall values.'Scalar'()
 .end
 

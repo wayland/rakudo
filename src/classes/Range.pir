@@ -113,14 +113,13 @@ just return a clone of the Range.
 =cut
 
 .sub 'list' :method
-    .local pmc range_it, result, result_storage
+    .local pmc range_it, result
     range_it = self.'iterator'()
-    result = new 'List'
-    result_storage = getattribute result, '@!storage'
+    result = new 'Perl6Array'
   range_loop:
     unless range_it goto range_end
     $P0 = shift range_it
-    push result_storage, $P0
+    result.'push'($P0)
     goto range_loop
   range_end:
     .return (result)

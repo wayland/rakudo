@@ -162,7 +162,7 @@ Dispatches to method of the given name on this class or one of its parents.
 
   autothread_invocant:
     .local pmc values, values_it, res, res_list, type
-    res_list = 'list'()
+    res_list = new 'Perl6Array'
     values = obj.'eigenstates'()
     values_it = iter values
   values_it_loop:
@@ -170,7 +170,7 @@ Dispatches to method of the given name on this class or one of its parents.
     $P0 = shift values_it
     $P1 = $P0.'HOW'()
     res = $P1.'dispatch'($P0, name, pos_args :flat, name_args :flat :named)
-    push res_list, res
+    res_list.'push'(res)
     goto values_it_loop
   values_it_loop_end:
     type = obj.'!type'()

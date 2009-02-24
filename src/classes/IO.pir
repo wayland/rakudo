@@ -74,7 +74,7 @@ See also slurp.
     .local pmc pio, res, chomper
     pio = getattribute self, "$!PIO"
     pio = '!DEREF'(pio)
-    res = new 'List'
+    res = new 'Perl6Array'
     chomper = get_hll_global 'chomp'
 
   loop:
@@ -230,7 +230,7 @@ Read all of the lines and return them as a List.
     $P0 = getattribute self, "$!IO"
     pio = getattribute $P0, "$!PIO"
     pio = '!DEREF'(pio)
-    res = new 'List'
+    res = new 'Perl6Array'
     chomper = get_hll_global 'chomp'
 
   loop:

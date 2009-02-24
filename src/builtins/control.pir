@@ -95,7 +95,7 @@ the moment -- we'll do more complex handling a bit later.)
     .param pmc block
     .local pmc list
     .local pmc eh
-    list = 'list'()
+    list = new 'Perl6Array'
     eh = new 'ExceptionHandler'
     eh.'handle_types'(.CONTROL_TAKE)
     set_addr eh, handler

@@ -113,7 +113,7 @@ the size of that file down and to emphasize their generic,
     .local pmc block_res
     .local pmc block_arg
 
-    retv = new 'List'
+    retv = new 'Perl6Array'
     iter = self.'iterator'()
   loop:
     unless iter goto done
@@ -188,15 +188,15 @@ Return a List with the keys of the invocant.
 .namespace ['Any']
 .sub 'kv' :method
     .local pmc result, it
-    result = new 'List'
+    result = new 'Perl6Array'
     it = self.'iterator'()
     .local int i
     i = 0
   loop:
     unless it goto done
     $P0 = shift it
-    push result, i
-    push result, $P0
+    result.'push'(i)
+    result.'push'($P0)
     inc i
     goto loop
   done:
@@ -225,7 +225,7 @@ Return a List with the keys of the invocant.
     if arity > 0 goto body
     arity = 1
   body:
-    res = new 'List'
+    res = new 'Perl6Array'
     iter = self.'iterator'()
   map_loop:
     unless iter goto done
@@ -364,7 +364,7 @@ Return a List with the keys of the invocant.
 .namespace ['Any']
 .sub 'pairs' :method
     .local pmc result, it
-    result = new 'List'
+    result = new 'Perl6Array'
     it = self.'iterator'()
     .local int i
     i = 0
@@ -372,7 +372,7 @@ Return a List with the keys of the invocant.
     unless it goto done
     $P0 = shift it
     $P1 = 'infix:=>'(i, $P0)
-    push result, $P1
+    result.'push'($P1)
     inc i
     goto loop
   done:
@@ -419,7 +419,7 @@ Return a List with the keys of the invocant.
     .local int elems
     list = self.'list'()
     elems = list.'elems'()
-    result = 'list'()
+    result = new 'Perl6Array'
     rand = get_hll_global ['Any'], '$!random'
 
     if has_num goto have_num

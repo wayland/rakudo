@@ -48,7 +48,7 @@ every pair, joined by newlines or an explicitly given separator.
 
   have_sep:
     it = self.'iterator'()
-    rv = new 'List'
+    rv = new 'Perl6Array'
 
   loop:
     .local pmc pairfmt
@@ -59,7 +59,7 @@ every pair, joined by newlines or an explicitly given separator.
     pair = shift it
     pairfmt = pair.'fmt'(format)
 
-    push rv, pairfmt
+    rv.'push'(pairfmt)
     goto loop
 
   end:
@@ -77,7 +77,7 @@ every pair, joined by newlines or an explicitly given separator.
     .local pmc rv
 
     it = iter self
-    rv = new 'List'
+    rv = new 'Perl6Array'
 
   loop:
     .local string key
@@ -89,7 +89,7 @@ every pair, joined by newlines or an explicitly given separator.
       val = it[key]
 
       pair = 'infix:=>'(key, val)
-      push rv, pair
+      rv.'push'(pair)
     goto loop
 
   end:
@@ -108,7 +108,7 @@ Returns keys of hash as a List
     .local pmc rv
 
     it = self.'iterator'()
-    rv = new 'List'
+    rv = new 'Perl6Array'
   loop:
     .local string key
     .local pmc pair
@@ -117,7 +117,7 @@ Returns keys of hash as a List
     pair = shift it
     key = pair.'key'()
 
-    push rv, key
+    rv.'push'(key)
     goto loop
 
   end:
@@ -136,7 +136,7 @@ Returns elements of hash as array of C<Pair(key, value)>
     .local pmc rv
 
     it = self.'iterator'()
-    rv = new 'List'
+    rv = new 'Perl6Array'
 
   loop:
     .local string key
@@ -148,8 +148,8 @@ Returns elements of hash as array of C<Pair(key, value)>
     key = pair.'key'()
     val = pair.'value'()
 
-    push rv, key
-    push rv, val
+    rv.'push'(key)
+    rv.'push'(val)
     goto loop
 
   end:
@@ -246,7 +246,7 @@ Returns values of hash as a List
     .local pmc rv
 
     it = self.'iterator'()
-    rv = new 'List'
+    rv = new 'Perl6Array'
 
   loop:
     .local pmc pair
@@ -256,7 +256,7 @@ Returns values of hash as a List
     pair = shift it
     val = pair.'value'()
 
-    push rv, val
+    rv.'push'(val)
     goto loop
 
   end:

@@ -128,7 +128,7 @@ src/builtins/assign.pir - assignments
 
     ## now build our 'real' source list, cloning any targets we encounter
     .local pmc slist, it
-    slist = new 'List'
+    slist = new 'ResizablePMCArray'
     it = iter source
   source_loop:
     unless it goto source_done
@@ -393,13 +393,13 @@ Implemented here as infix:// reduces to a PAST node rather than a call.
   chain_reduce:
     combinder = find_name '!REDUCEMETAOPCHAIN'
   combinder_done:
-    result = 'list'()
+    result = new 'Perl6Array'
     it = iter lists
   it_loop:
     unless it goto it_loop_end
     $P0 = shift it
     $P0 = combinder(opname, identity, $P0)
-    push result, $P0
+    result.'push'($P0)
     goto it_loop
   it_loop_end:
 

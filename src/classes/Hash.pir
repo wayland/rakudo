@@ -43,13 +43,13 @@ src/classes/Hash.pir - Perl 6 Hash class and related functions
     .local pmc result
     .local string key
     .local pmc tmp
-    result = new 'List'
+    result = new 'Perl6Array'
     keys.'!flatten'()
   keys_loop:
     unless keys goto done
     key = shift keys
     tmp = self[key]
-    push result, tmp
+    result.'push'(tmp)
     delete self[key]
     goto keys_loop
   done:
@@ -88,6 +88,7 @@ Create a Hash (hashref).
 .namespace []
 .sub 'circumfix:{ }'
     .param pmc values :slurpy
+    values.'!flatten'()
     $P0 = values.'Hash'()
     $P0 = new 'Perl6Scalar', $P0
     .return ($P0)
