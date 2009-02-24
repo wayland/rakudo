@@ -67,7 +67,7 @@ the Signature.
     # constraints; otherwise, we find the unique type. Finally, we turn the
     # list of constraints into a junction.
     .local pmc cur_list, cur_list_iter, constraints, type, test_item
-    constraints = 'list'()
+    constraints = new 'ResizablePMCArray'
     type = null
     cur_list = attr["type"]
     unless null cur_list goto have_type_attr
@@ -76,7 +76,7 @@ the Signature.
     attr["type"] = cur_list
   have_type_attr:
     cur_list = cur_list.'eigenstates'()
-    cur_list_iter = iter cur_list
+    cur_list_iter = cur_list.'iterator'()
   cur_list_loop:
     unless cur_list_iter goto cur_list_loop_end
     test_item = shift cur_list_iter

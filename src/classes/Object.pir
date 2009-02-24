@@ -148,7 +148,8 @@ Return invocant in list context.  Default is to return a List containing self.
 .namespace ['Perl6Object']
 .sub 'list' :method
     $P0 = new 'List'
-    push $P0, self
+    $P1 = getattribute $P0, '@!storage'
+    push $P1, self
     .return ($P0)
 .end
 

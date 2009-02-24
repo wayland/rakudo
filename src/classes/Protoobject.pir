@@ -98,8 +98,9 @@ Return a clone of the protoobject with a new WHENCE property set.
 
 .namespace ['P6protoobject']
 .sub '!flatten' :method
-    $P0 = new 'ResizablePMCArray'
-    push $P0, self
+    $P0 = new 'List'
+    $P1 = getattribute $P0, '@!storage'
+    push $P1, self
     .return ($P0)
 .end
 

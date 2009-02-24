@@ -306,7 +306,6 @@ first). So for now we just transform multis in user code like this.
     .param pmc unitmain
     .param pmc args
 
-    args = 'list'(args)
     if args goto start_main
     .tailcall unitmain()
 
@@ -314,6 +313,7 @@ first). So for now we just transform multis in user code like this.
     ## We're running as main program
     ## Remove program argument (0) and set up @ARGS global
     $P0 = shift args
+    args = 'list'(args)
     args = args.'Array'()
     set_hll_global '@ARGS', args
     ## run unitmain

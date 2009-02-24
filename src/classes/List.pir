@@ -375,16 +375,15 @@ Returns an iterator for the list.
   have_comparer:
 
     .local pmc ulist, ulist_storage
-    $P0 = get_hll_global 'List'
-    ulist = $P0.'new'()
+    ulist = new ['List']
     ulist_storage = getattribute ulist, '@!storage'
 
     .local pmc it_inner, it_outer, val
-    it_outer = iter self
+    it_outer = self.'iterator'()
   outer_loop:
     unless it_outer goto outer_done
     val = shift it_outer
-    it_inner = iter ulist
+    it_inner = ulist.'iterator'()
   inner_loop:
     unless it_inner goto inner_done
     $P0 = shift it_inner

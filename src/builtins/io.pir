@@ -16,7 +16,7 @@ src/builtins/io.pir - Perl6 builtins for I/O
     .param pmc args            :slurpy
     .local pmc it
     args.'!flatten'()
-    it = iter args
+    it = args.'iterator'()
   iter_loop:
     unless it goto iter_end
     $P0 = shift it
