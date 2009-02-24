@@ -148,6 +148,7 @@ the size of that file down and to emphasize their generic,
   have_sep:
     $P0 = self.'list'()
     $P0.'!flatten'()
+    $P0 = getattribute $P0, '@!storage'
     $S0 = join sep, $P0
     .return ($S0)
 .end

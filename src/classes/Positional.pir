@@ -29,13 +29,15 @@ Returns a list element or slice.
 .sub 'postcircumfix:[ ]' :method
     .param pmc args            :slurpy
     .param pmc options         :slurpy :named
-    .local pmc result
+    .local pmc self_storage, result, result_storage
     if args goto do_index
     ## return complete invocant as a list
     .tailcall self.'list'()
   do_index:
+    self_storage = getattribute self, '@!storage'
     args.'!flatten'()
-    $I0 = args.'elems'()
+    args = getattribute args, '@!storage'
+    $I0 = elements args
     if $I0 != 1 goto slice
     $P0 = args[0]
     $I0 = isa $P0, ['Whatever']
@@ -45,16 +47,17 @@ Returns a list element or slice.
     result = 'undef'()
     goto end
   result_fetch:
-    result = self[$I0]
+    result = self_storage[$I0]
     unless null result goto end
     result = 'undef'()
-    self[$I0] = result
+    self_storage[$I0] = result
     goto end
   result_whatever:
     result = 'list'(self)
     goto end
   slice:
     result = new ['List']
+    result_storage = getattribute result, '@!storage'
   slice_loop:
     unless args goto slice_done
     $P0 = shift args
@@ -67,17 +70,17 @@ Returns a list element or slice.
     elem = 'undef'()
     goto slice_elem
   slice_index:
-    elem = self[$I0]
+    elem = self_storage[$I0]
     unless null elem goto slice_elem
     elem = 'undef'()
     self[$I0] = elem
   slice_elem:
-    push result, elem
+    push result_storage, elem
     goto slice_loop
   slice_whatever:
     ##  add all of the elements to the result
     $I0 = elements result
-    splice result, self, $I0, 0
+    splice result, self_storage, $I0, 0
     goto slice_loop
   slice_done:
   end:

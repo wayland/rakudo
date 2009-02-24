@@ -724,6 +724,16 @@ Helper for doing calls on the metaclass.
     .return(self)
 .end
 
+.sub '' :vtable('get_iter') :method
+    $P0 = self.'iterator'()
+    .return ($P0)
+.end
+
+.sub '' :vtable('elements') :method
+    $I0 = self.'elems'()
+    .return ($I0)
+.end
+
 # Local Variables:
 #   mode: pir
 #   fill-column: 100

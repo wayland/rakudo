@@ -23,7 +23,7 @@ src/classes/List.pir - Perl 6 List class and related functions
 .end
 
 .namespace ['List']
-.sub '' :vtable('init')
+.sub 'new' :method :vtable('init')
     $P0 = new 'ResizablePMCArray'
     setattribute self, '@!storage', $P0
 .end
@@ -231,6 +231,10 @@ Return the number of elements in the list.
     $I0 = elements storage
     .return ($I0)
 .end
+.sub '' :vtable('get_number')
+    $N0 = self.'elems'()
+    .return ($N0)
+.end
 
 
 .namespace ['List']
@@ -429,7 +433,7 @@ Operator form for building a list from its arguments.
 .namespace []
 .sub 'infix:,'
     .param pmc args            :slurpy
-    .tailcall args.'list'()
+    .tailcall args.'!flatten'()
 .end
 
 

@@ -193,7 +193,8 @@ the moment -- we'll do more complex handling a bit later.)
     .param pmc list            :slurpy
     .local string message
     .local pmc ex
-
+    
+    list = 'list'(list)
     message = list.'join'('')
     if message > '' goto have_message
     message = "Died\n"
