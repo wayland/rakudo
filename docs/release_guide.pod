@@ -1,0 +1,47 @@
+=head1 release_guide.pod - guide to Rakudo releases
+
+Rakudo's development releases are based on the Parrot releases.
+Parrot releases the third Tuesday of each month, and Rakudo will trail
+that by two days.
+
+Development releases are given code names, in ascending alphabetical
+order.  Each code name is a city with an active Perl Mongers group.
+
+=head1 DEVELOPMENT RELEASES
+
+=head2 Austin, 2009-02-26
+
+Austin.pm is the home PM group of Rakudo project manager, Patrick Michaud.
+
+=head1 FUTURE RELEASES
+
+=head2 Bratislava, 2009-03-18 (planned)
+
+Bratislava is the home PM group of Rakudo core team member Jonathan
+Worthington.
+
+=head2 C, 2009-04-23 (planned)
+
+City to be determined.
+
+=head2 D, 2009-05-18 (planned)
+
+City to be determined.
+
+=head1 HOW TO GET YOUR CITY ON A RELEASE
+
+=head1 AUTHORS
+
+Andy Lester created this document.
+
+=head1 COPYRIGHT
+
+Copyright (C) 2009, The Perl Foundation.
+
+=cut
+
+# Local Variables:
+#   fill-column: 100
+# End:
+# vim: expandtab shiftwidth=4:
+
